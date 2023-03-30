@@ -5,6 +5,8 @@ using UnityEngine;
 public class Die : MonoBehaviour
 {
     private GameManager gameManager;
+    public bool isCurrentDie = false;
+    private BoxCollider2D bCollider2D;
 
     //Color
     private int colorValue;
@@ -18,13 +20,15 @@ public class Die : MonoBehaviour
     public GameObject valueObject;
     public Sprite[] valueSpriteDots;
     public Sprite[] valueSpriteNum;
-    // Start is called before the first frame update
+    
     private void Awake() 
     {
         srValue = valueObject.GetComponent<SpriteRenderer>();
         srDice = GetComponent<SpriteRenderer>();
+        bCollider2D = GetComponent<BoxCollider2D>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
+
     void Start()
     {
         value = Random.Range(1, 7);
@@ -37,8 +41,25 @@ public class Die : MonoBehaviour
         srDice.color = diceColor[colorValue];
     }
 
+    private void Update() 
+    {
+        if(!isCurrentDie)    
+            return;
+        else
+        {
+            bCollider2D.size = new Vector2(2.17f, 2.17f);
+            bCollider2D.offset = Vector2.zero;
+        }
+    }
+
     private void OnMouseDown() 
     {
-        gameManager.CheckValue(value, colorValue);
+        if(!isCurrentDie)
+            gameManager.CheckValue(value, colorValue, gameObject);
+        else
+        {
+            gameManager.ResetCurrentValue();
+            Destroy(gameObject);
+        }
     }
 }
