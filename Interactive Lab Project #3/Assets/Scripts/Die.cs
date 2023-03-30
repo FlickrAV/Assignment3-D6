@@ -6,6 +6,7 @@ public class Die : MonoBehaviour
 {
     private GameManager gameManager;
     public bool isCurrentDie = false;
+    public bool shouldDestroy = false;
     private BoxCollider2D bCollider2D;
 
     //Color
@@ -49,6 +50,10 @@ public class Die : MonoBehaviour
         {
             bCollider2D.size = new Vector2(2.17f, 2.17f);
             bCollider2D.offset = Vector2.zero;
+            if(shouldDestroy)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -59,7 +64,7 @@ public class Die : MonoBehaviour
         else
         {
             gameManager.ResetCurrentValue();
-            Destroy(gameObject);
+            GetComponent<Animator>().Play("slide_down_destroy");
         }
     }
 }

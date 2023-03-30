@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         chainText.text = chain.ToString();
         progressBar.value = score;
 
-        if(newDie != null)
+        if(currentDie != null)
         {
             timer += Time.deltaTime;
             currentDie.transform.parent.transform.position = Vector3.Lerp(newDie.transform.parent.transform.position, new Vector3(0, -3, 0),timer);
@@ -92,6 +92,38 @@ public class GameManager : MonoBehaviour
         }
         else
         newestDie.GetComponent<Animator>().Play("shake");
+    }
+
+    private void NextDie()
+    {
+        timer = 0;
+        Destroy(currentDie);
+
+        //Change value of currentDie
+        currentDie = newDie;
+        currentDie.GetComponentInChildren<Die>().isCurrentDie = true;
+        foreach(List<GameObject> columnList in columnArray)
+        {
+            if(columnList.Contains(currentDie.transform.parent.gameObject))
+            {
+                columnList.RemoveAt(0);
+                columnList.TrimExcess();
+                columnList[0].GetComponentInChildren<Animator>().SetBool("2ndRow", true);
+                columnList.Add(Instantiate(diePrefab, new Vector3(currentDie.transform.position.x, 0, 0), transform.rotation));
+            }
+        }
+    }
+
+    private void GameOver()
+    {
+        Debug.Log("GameOver");
+    }
+
+    public void ResetCurrentValue()
+    {
+        valueNull = true;
+        chain = 0;
+        health --;
     }
 
     private IEnumerator StartGame()
@@ -139,35 +171,5 @@ public class GameManager : MonoBehaviour
         //10
         yield return new WaitForSeconds(.1f);
         column1.Add(Instantiate(diePrefab, new Vector3(-7, 0, 0), transform.rotation));  
-    }
-
-    private void NextDie()
-    {
-        timer = 0;
-        Destroy(currentDie);
-        currentDie = newDie;
-        currentDie.GetComponentInChildren<Die>().isCurrentDie = true;
-        foreach(List<GameObject> columnList in columnArray)
-        {
-            if(columnList.Contains(currentDie.transform.parent.gameObject))
-            {
-                columnList.RemoveAt(0);
-                columnList.TrimExcess();
-                columnList[0].GetComponentInChildren<Animator>().SetBool("2ndRow", true);
-                columnList.Add(Instantiate(diePrefab, new Vector3(currentDie.transform.position.x, 0, 0), transform.rotation));
-            }
-        }
-    }
-
-    private void GameOver()
-    {
-        Debug.Log("GameOver");
-    }
-
-    public void ResetCurrentValue()
-    {
-        valueNull = true;
-        chain = 0;
-        health --;
     }
 }
