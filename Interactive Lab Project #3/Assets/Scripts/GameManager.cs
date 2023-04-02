@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
         if(currentDie != null)
         {
             timer += Time.deltaTime;
-            currentDie.transform.parent.transform.position = Vector3.Lerp(newDie.transform.parent.transform.position, new Vector3(0, -3.3f, 0),timer);
+            currentDie.transform.parent.transform.position = Vector3.Lerp(newDie.transform.parent.transform.position, new Vector3(0, -3f, 0),timer);
             timer = Mathf.Clamp(timer, 0, 1);
         }
 
