@@ -8,11 +8,11 @@ public class Die : MonoBehaviour
     public bool isCurrentDie = false;
     public bool shouldDestroy = false;
     private BoxCollider2D bCollider2D;
+    private ParticleSystem particleSystem;
 
     //Color
     private int colorValue;
     private SpriteRenderer srDice;
-    public Color[] diceColor;
 
     //Value
     private int value;
@@ -27,6 +27,7 @@ public class Die : MonoBehaviour
         srValue = valueObject.GetComponent<SpriteRenderer>();
         srDice = GetComponent<SpriteRenderer>();
         bCollider2D = GetComponent<BoxCollider2D>();
+        particleSystem = GetComponent<ParticleSystem>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
@@ -38,12 +39,15 @@ public class Die : MonoBehaviour
         else
             srValue.sprite =  valueSpriteNum[value];
         
-        colorValue = Random.Range(1, 7);
-        srDice.color = diceColor[colorValue];
+        colorValue = Random.Range(0, 6);
+        srDice.color = PaletteManager.GetInstance().currentPalette[colorValue];
+        particleSystem.startColor = PaletteManager.GetInstance().currentPalette[colorValue];
     }
 
     private void Update() 
     {
+        if(transform.position.x > 12 || transform.position.x < -12)
+            Destroy(transform.parent.gameObject);
         if(!isCurrentDie)    
             return;
         else
@@ -52,7 +56,7 @@ public class Die : MonoBehaviour
             bCollider2D.offset = Vector2.zero;
             if(shouldDestroy)
             {
-                Destroy(gameObject);
+                Destroy(gameObject.transform.parent.gameObject);
             }
         }
     }
@@ -63,8 +67,14 @@ public class Die : MonoBehaviour
             gameManager.CheckValue(value, colorValue, gameObject);
         else
         {
-            gameManager.ResetCurrentValue();
-            GetComponent<Animator>().Play("slide_down_destroy");
+            gameManager.TakeDamage();
+            if(gameManager.score >= 50 && gameManager.health < 0)
+            {
+                GetComponent<Animator>().SetBool("gameOver", true);
+                GetComponent<Animator>().Play("shake");
+            }
+            else
+                GetComponent<Animator>().Play("slide_down_destroy");
         }
     }
 }
