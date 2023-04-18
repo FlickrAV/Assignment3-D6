@@ -11,9 +11,10 @@ public class MainMenu : MonoBehaviour
     public Animator gameLogo;
     public Animator gameMenu;
     public Animator statsMenu;
-    public ScoreTracker scoreTracker;
     public GameObject tutorialMenu;
     public GameObject tutorial;
+    [SerializeField]
+    private ScoreTracker scoreTracker;
 
     public void GameStart()
     {
